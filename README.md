@@ -15,3 +15,9 @@ DDB (Discord Database) is a Discord Bot that helps managing and storing data tha
 The bot is written in JavaScript (by using Discord Js).
 
 ### Versions
+
+**v. 0.1-beta (05/11)**: *added a simple select statement.*
+
+**v. 0.2-beta (07/11)**: *added a simple delete statement and fixed some errors.*
+
+**v. 0.3-beta (09/11)**: *added a simple insert statement and fixed the select * .*
