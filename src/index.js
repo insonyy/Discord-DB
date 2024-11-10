@@ -1,4 +1,4 @@
-const { Client, IntentsBitField, ActivityType, Collection } = require('discord.js');
+const { Client, IntentsBitField, Collection, ChannelType } = require('discord.js');
 require('dotenv').config();
 
 const client = new Client({
@@ -69,10 +69,20 @@ client.on('interactionCreate', async (interaction) => {
             break;
         case 'update':
             update(interaction)
-            break
+            break;
+        case 'create-database':
+            createDatabase(interaction)
+            break;
+        case 'drop-database':
+            dropDatabase(interaction)
+            break;
 
     }
 });
+
+function version(interaction){
+    interaction.reply('Versión del bot: ' + require('../package.json').version);
+}
 
 async function select(interaction) {
     const fromChannelSelect = interaction.options.getChannel('from');
@@ -149,8 +159,10 @@ function del(interaction){
 
 }
 
-function version(interaction){
-    interaction.reply('Versión del bot: ' + require('../package.json').version);
+
+
+async function update(interaction){
+
 }
 
 async function insert(interaction) {
@@ -208,9 +220,53 @@ async function insertPrueba(interaction){
     }
 }
 
-async function update(interaction){
+async function createDatabase(interaction) {
+    const nameDatabase = interaction.options.getString('name');
+
+    if (!nameDatabase) return interaction.reply('El nombre introducido no es un nombre válido para la base de datos.')
+
+    try {
+        await interaction.guild.channels.create({
+            name: nameDatabase,
+            type: ChannelType.GuildCategory
+        });
+
+        await interaction.reply(`La categoría '${nameDatabase}' ha sido creada con éxito.`);
+
+    } catch (error) {
+        console.error('Error al crear la base de datos:', error);
+        interaction.reply('Hubo un error al intentar crear la base de datos.');
+    }
 
 }
+
+async function dropDatabase(interaction) {
+    const nameDatabase = interaction.options.getString('name');
+
+    if (!nameDatabase) return interaction.reply('El nombre introducido no es un nombre válido para la base de datos.')
+
+    try {
+
+        const category = interaction.guild.channels.cache.find(
+            (channel) => channel.name === nameDatabase && channel.type === ChannelType.GuildCategory
+        );
+
+        if (!category) {
+            return interaction.reply('No se encontró una categoría con el nombre proporcionado.');
+        }
+
+        await category.delete();
+        interaction.reply(`La categoría '${nameDatabase}' ha sido eliminada con éxito.`);
+
+
+    } catch (error) {
+        console.error('Error al elimiar la base de datos:', error);
+        interaction.reply('Hubo un error al intentar eliminar la base de datos.');
+    }
+
+}
+
+
 
 client.login(process.env.TOKEN);
 

@@ -122,8 +122,21 @@ const commands = [
         ]
     },
     {
-        name: 'create database',
+        name: 'create-database',
         description: 'Comando para crear la base de datos',
+        options: [
+
+            {
+                name: "name",
+                description: "Nombre de la base de datos",
+                type: ApplicationCommandOptionType.String,
+                required: true,
+            },
+        ]
+    },
+    {
+        name: 'drop-database',
+        description: 'Comando para eliminar la base de datos. COMANDO SENSIBLE.',
         options: [
 
             {
