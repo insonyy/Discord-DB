@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { REST, Routes, ApplicationCommandOptionType } = require("discord.js");
+const {REST, Routes, ApplicationCommandOptionType} = require("discord.js");
 
 const commands = [
     {
@@ -108,9 +108,35 @@ const commands = [
             },
         ]
     },
+    {
+        name: 'update',
+        description: 'Comando para editar un dato',
+        options: [
+            {
+                name: "from",
+                description: "Desde donde se quiere eliminar",
+                type: ApplicationCommandOptionType.Channel,
+                required: true,
+            },
+
+        ]
+    },
+    {
+        name: 'create database',
+        description: 'Comando para crear la base de datos',
+        options: [
+
+            {
+                name: "name",
+                description: "Nombre de la base de datos",
+                type: ApplicationCommandOptionType.String,
+                required: true,
+            },
+        ]
+    }
 ];
 
-const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
+const rest = new REST({version: "10"}).setToken(process.env.TOKEN);
 
 (async () => {
     try {
@@ -120,7 +146,7 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
                 process.env.CLIENT_ID,
                 process.env.GUILD_ID
             ),
-            { body: commands }
+            {body: commands}
         );
 
         console.log("Slash commands were registered successfully!");

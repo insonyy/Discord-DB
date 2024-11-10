@@ -65,41 +65,11 @@ client.on('interactionCreate', async (interaction) => {
             insert(interaction)
             break;
         case 'insert-prueba':
-            const intoChannelInsertP = interaction.options.getChannel('into');
-            const value1InsertP = interaction.options.getString('value1');
-            const numrepInsertP = interaction.options.getNumber('numrep');
-
-            if (!intoChannelInsertP.isTextBased()) {
-                return interaction.reply('Por favor, especifica un canal de texto válido.');
-            } else {
-                try {
-                    if (!intoChannelInsertP.isTextBased()) {
-                        return interaction.reply('Por favor, especifica un canal de texto válido.');
-                    } else {
-                        try {
-
-                            await interaction.deferReply();
-
-                            for (let i = 0; i < numrepInsertP; i++) {
-
-                                await intoChannelInsertP.send(`${value1InsertP}`);
-                            }
-
-                            await interaction.editReply('Mensaje insertado');
-
-                        } catch (error) {
-                            console.error('Error al insertar el contenido:', error);
-                            interaction.reply('Hubo un error al intentar insertar los mensajes.');
-                        }
-                    }
-
-
-                } catch (error) {
-                    console.error('Error al insertar el contenido:', error);
-                    interaction.reply('Hubo un error al intentar insertar los mensajes.');
-                }
-            }
+            insertPrueba(interaction)
             break;
+        case 'update':
+            update(interaction)
+            break
 
     }
 });
@@ -175,6 +145,10 @@ async function select(interaction) {
 
 }
 
+function del(interaction){
+
+}
+
 function version(interaction){
     interaction.reply('Versión del bot: ' + require('../package.json').version);
 }
@@ -197,6 +171,46 @@ async function insert(interaction) {
     }
 }
 
+async function insertPrueba(interaction){
+    const intoChannelInsertP = interaction.options.getChannel('into');
+    const value1InsertP = interaction.options.getString('value1');
+    const numrepInsertP = interaction.options.getNumber('numrep');
+
+    if (!intoChannelInsertP.isTextBased()) {
+        return interaction.reply('Por favor, especifica un canal de texto válido.');
+    } else {
+        try {
+            if (!intoChannelInsertP.isTextBased()) {
+                return interaction.reply('Por favor, especifica un canal de texto válido.');
+            } else {
+                try {
+
+                    await interaction.deferReply();
+
+                    for (let i = 0; i < numrepInsertP; i++) {
+
+                        await intoChannelInsertP.send(`${value1InsertP}`);
+                    }
+
+                    await interaction.editReply('Mensaje insertado');
+
+                } catch (error) {
+                    console.error('Error al insertar el contenido:', error);
+                    interaction.reply('Hubo un error al intentar insertar los mensajes.');
+                }
+            }
+
+
+        } catch (error) {
+            console.error('Error al insertar el contenido:', error);
+            interaction.reply('Hubo un error al intentar insertar los mensajes.');
+        }
+    }
+}
+
+async function update(interaction){
+
+}
 
 client.login(process.env.TOKEN);
 

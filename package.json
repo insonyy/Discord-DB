@@ -1,6 +1,6 @@
 {
   "name": "ddb",
-  "version": "beta 1.0",
+  "version": "v.0.3-beta",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
