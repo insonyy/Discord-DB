@@ -76,6 +76,10 @@ client.on('interactionCreate', async (interaction) => {
         case 'drop-database':
             dropDatabase(interaction)
             break;
+        case 'create-table':
+            createTable(interaction)
+            break;
+
 
     }
 });
@@ -231,7 +235,7 @@ async function createDatabase(interaction) {
             type: ChannelType.GuildCategory
         });
 
-        await interaction.reply(`La categoría '${nameDatabase}' ha sido creada con éxito.`);
+        await interaction.reply(`La base de datos '${nameDatabase}' ha sido creada con éxito.`);
 
     } catch (error) {
         console.error('Error al crear la base de datos:', error);
@@ -256,16 +260,48 @@ async function dropDatabase(interaction) {
         }
 
         await category.delete();
-        interaction.reply(`La categoría '${nameDatabase}' ha sido eliminada con éxito.`);
+        interaction.reply(`La base de datos '${nameDatabase}' ha sido eliminada con éxito.`);
 
 
     } catch (error) {
-        console.error('Error al elimiar la base de datos:', error);
+        console.error('Error al eliminar la base de datos:', error);
         interaction.reply('Hubo un error al intentar eliminar la base de datos.');
     }
 
 }
 
+async function createTable(interaction){
+
+    const nameTable = interaction.options.getString('table_name');
+    const into = interaction.options.getString('into');
+    const column1 = interaction.options.getString('column1');
+    const datatype1 = interaction.options.getString('datatype1');
+    const column2 = interaction.options.getString('column2');
+    const datatype2 = interaction.options.getString('datatype2');
+
+    const db = interaction.guild.channels.cache.find(c => c.name === into && c.type === ChannelType.GuildCategory);
+
+    console.log(db)
+
+    if (!db){
+        return interaction.reply('Hubo un error al intentar crear la tabla.');
+    } else{
+        try{
+            await interaction.guild.channels.create({
+                name: nameTable,
+                type: ChannelType.Channel,
+                parent: db.id,
+                topic: column1 + '(' + datatype1 + ')' + ';' + column2 + '(' + datatype2 +')'
+            });
+
+            await interaction.reply(`La tabla '${nameTable}' ha sido creada con éxito.`);
+
+        }catch (error){
+            console.error('Error al crear la tabla:', error);
+            interaction.reply('Hubo un error al intentar crear la tabla.');
+        }
+    }
+}
 
 
 client.login(process.env.TOKEN);

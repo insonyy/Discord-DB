@@ -146,7 +146,54 @@ const commands = [
                 required: true,
             },
         ]
-    }
+    },
+    {
+        name: 'create-table',
+        description: 'Comando para crear una tabla en la base de datos',
+        options: [
+
+            {
+                name: "table_name",
+                description: "Nombre de la base de datos",
+                type: ApplicationCommandOptionType.String,
+                required: true,
+            },
+            {
+                name: "into",
+                description: "Ubicación donde se va a crear la tabla",
+                type: ApplicationCommandOptionType.String,
+                required: true,
+            },
+            {
+                name: "column1",
+                description: "Primer parámetro",
+                type: ApplicationCommandOptionType.String,
+                required: false,
+            },
+            {
+                name: "datatype1",
+                description: "Tipo de dato del primer parámetro",
+                type: ApplicationCommandOptionType.String,
+                required: false,
+            },
+            {
+                name: "column2",
+                description: "Segundo parámetro",
+                type: ApplicationCommandOptionType.String,
+                required: false,
+            },
+            {
+                name: "datatype2",
+                description: "Tipo de dato del segundo parámetro",
+                type: ApplicationCommandOptionType.String,
+                required: false,
+            },
+        ]
+    },
+    {
+        name: 'prueba-tema',
+        description: 'Comando para sacar el tema del canal',
+    },
 ];
 
 const rest = new REST({version: "10"}).setToken(process.env.TOKEN);
