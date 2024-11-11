@@ -281,8 +281,6 @@ async function createTable(interaction){
 
     const db = interaction.guild.channels.cache.find(c => c.name === into && c.type === ChannelType.GuildCategory);
 
-    console.log(db)
-
     if (!db){
         return interaction.reply('Hubo un error al intentar crear la tabla.');
     } else{
