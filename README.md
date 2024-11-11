@@ -1,3 +1,8 @@
+<div align="center">
+<img src="https://github.com/insonyy/Discord-DB/blob/main/readme_stuff/logo.png" width="20%" height="20%">
+</div>
+
+
 # Discord DB (DDB)
 Database motor for manipulating, retrieving and storing data by using a Discord server.<br><br>
 
