@@ -1,6 +1,8 @@
 const { Client, IntentsBitField, Collection, ChannelType } = require('discord.js');
 require('dotenv').config();
 
+let selectedDatabase
+
 const client = new Client({
     intents: [
         IntentsBitField.Flags.Guilds,
@@ -78,6 +80,9 @@ client.on('interactionCreate', async (interaction) => {
             break;
         case 'create-table':
             createTable(interaction)
+            break;
+        case 'use':
+            use(interaction)
             break;
 
 
@@ -273,22 +278,19 @@ async function dropDatabase(interaction) {
 async function createTable(interaction){
 
     const nameTable = interaction.options.getString('table_name');
-    const into = interaction.options.getString('into');
     const column1 = interaction.options.getString('column1');
     const datatype1 = interaction.options.getString('datatype1');
     const column2 = interaction.options.getString('column2');
     const datatype2 = interaction.options.getString('datatype2');
 
-    const db = interaction.guild.channels.cache.find(c => c.name === into && c.type === ChannelType.GuildCategory);
-
-    if (!db){
-        return interaction.reply('Hubo un error al intentar crear la tabla.');
+    if (!selectedDatabase){
+        return interaction.reply('Por favor introduzca una base de datos válida.');
     } else{
         try{
             await interaction.guild.channels.create({
                 name: nameTable,
                 type: ChannelType.Channel,
-                parent: db.id,
+                parent: selectedDatabase.id,
                 topic: column1 + '(' + datatype1 + ')' + ';' + column2 + '(' + datatype2 +')'
             });
 
@@ -301,6 +303,17 @@ async function createTable(interaction){
     }
 }
 
+async function use(interaction){
+    const database = interaction.options.getString('database');
+
+    selectedDatabase  = interaction.guild.channels.cache.find(c => c.name === database && c.type === ChannelType.GuildCategory);
+
+    if (!selectedDatabase){
+        return interaction.reply('La base de datos introducida no existe.');
+    } else {
+        await interaction.reply('Se ha seleccionado la siguiente base de datos: ' + selectedDatabase)
+    }
+}
 
 client.login(process.env.TOKEN);
 

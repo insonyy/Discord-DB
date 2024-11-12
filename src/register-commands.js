@@ -158,12 +158,7 @@ const commands = [
                 type: ApplicationCommandOptionType.String,
                 required: true,
             },
-            {
-                name: "into",
-                description: "Ubicación donde se va a crear la tabla",
-                type: ApplicationCommandOptionType.String,
-                required: true,
-            },
+
             {
                 name: "column1",
                 description: "Primer parámetro",
@@ -191,8 +186,16 @@ const commands = [
         ]
     },
     {
-        name: 'prueba-tema',
-        description: 'Comando para sacar el tema del canal',
+        name: 'use',
+        description: 'Seleccionar base de datos a usar.',
+        options: [
+            {
+                name: "database",
+                description: "Base de datos que se usará",
+                type: ApplicationCommandOptionType.String,
+                required: true,
+            },
+        ]
     },
 ];
 
