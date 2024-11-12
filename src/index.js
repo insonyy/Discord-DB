@@ -32,35 +32,7 @@ client.on('interactionCreate', async (interaction) => {
             break;
 
         case 'delete':
-            const fromChannelDelete = interaction.options.getChannel('from');
-            const param1Delete = interaction.options.getString('param1');
-            const param2Delete = interaction.options.getString('param2');
-
-            if (!fromChannelDelete.isTextBased()) {
-                return interaction.reply('Por favor, especifica un canal de texto válido.');
-            }
-
-            try {
-                const messages = await fromChannelDelete.messages.fetch({ limit: 100 });
-
-                const messagesToDelete = messages.filter(msg =>
-                    msg.content.includes(param1Delete) && (!param2Delete || msg.content.includes(param2Delete))
-                );
-
-                if (messagesToDelete.size === 0) {
-                    console.log('No se encontraron mensajes para eliminar con esos parámetros.');
-                    return interaction.reply('No se encontraron mensajes para eliminar con esos parámetros.');
-                }
-
-                await fromChannelDelete.bulkDelete(messagesToDelete, true);
-
-                interaction.reply(`Se han eliminado ${messagesToDelete.size} mensajes del canal ${fromChannelDelete.name}.`);
-                console.log(`Se han eliminado ${messagesToDelete.size} mensajes del canal ${fromChannelDelete.name}.`);
-
-            } catch (error) {
-                console.error('Error al eliminar mensajes:', error);
-                interaction.reply('Hubo un error al intentar eliminar los mensajes.');
-            }
+            del(interaction)
             break;
 
         case 'insert':
@@ -164,8 +136,62 @@ async function select(interaction) {
 
 }
 
-function del(interaction){
+async function del(interaction) {
+    const fromChannelDelete = interaction.options.getChannel('from');
+    const param1Delete = interaction.options.getString('param1');
+    //const param2Delete = interaction.options.getString('param2');
+    const where = interaction.options.getString('where');
 
+    if (!fromChannelDelete.isTextBased()) {
+        return interaction.reply('Por favor, especifica un canal de texto válido.');
+    }
+
+    try {
+
+        let colms = [];
+        //let values = []
+        const colmString= fromChannelDelete.topic;
+        const columns = colmString.split(';');
+
+        columns.forEach(column =>{
+            const match = column.match(/^([^()]+)\(([^)]+)\)$/);
+            if (match) {
+                colms.push(match[1].trim());
+                //values.push(match[2].trim());
+            }
+        });
+
+        const whereIndex = colms.indexOf(where);
+
+        if (whereIndex === -1) {
+            return interaction.reply(`La columna especificada '${where}' no existe en la descripción del canal.`);
+        }
+
+        //const targetValue = values[whereIndex];
+        //if (targetValue !== param1Delete) {
+        //    return interaction.reply(`No se encontraron registros en la columna '${where}' con el valor '${param1Delete}'.`);
+        //}
+
+        const messages = await fromChannelDelete.messages.fetch();
+
+        const messagesToDelete = messages.filter(msg =>
+            (msg.content.includes(param1Delete))
+        );
+
+        if (messagesToDelete.size === 0) {
+            console.log('No se encontraron mensajes para eliminar con esos parámetros.');
+            return interaction.reply('No se encontraron mensajes para eliminar con esos parámetros.');
+        }
+
+        await fromChannelDelete.bulkDelete(messagesToDelete, true);
+
+        interaction.reply(`Se han eliminado ${messagesToDelete.size} mensajes del canal ${fromChannelDelete.name}.`);
+        console.log(`Se han eliminado ${messagesToDelete.size} mensajes del canal ${fromChannelDelete.name}.`);
+
+    } catch (error) {
+        console.error('Error al eliminar mensajes:', error);
+        interaction.reply('Hubo un error al intentar eliminar los mensajes.');
+    }
 }
 
 
@@ -177,17 +203,45 @@ async function update(interaction){
 async function insert(interaction) {
     const intoChannelInsert = interaction.options.getChannel('into');
     const value1Insert = interaction.options.getString('value1');
+    const value2Insert = interaction.options.getString('value2');
+    const value3Insert = interaction.options.getString('value3');
+    const value4Insert = interaction.options.getString('value4');
+    const value5Insert = interaction.options.getString('value5');
 
     if (!intoChannelInsert.isTextBased()) {
         return interaction.reply('Por favor, especifica un canal de texto válido.');
     } else {
         try {
-            await intoChannelInsert.send(`${value1Insert}`);
-            interaction.reply('Mensaje insertado');
+
+            let colms = [];
+            let values = []
+            const colmString= intoChannelInsert.topic;
+            const columns = colmString.split(';');
+
+            columns.forEach(column =>{
+                    const match = column.match(/^([^()]+)\(([^)]+)\)$/);
+                if (match) {
+                    colms.push(match[1].trim());
+                    values.push(match[2].trim());
+                }
+            });
+
+            console.log(intoChannelInsert.topic)
+            console.log(`Número de columnas: ${colms.length}`);
+            console.log(`Columnas: ${colms}`);
+            console.log(`Valores: ${values}`);
+
+            //Comprobar el tipo de dato introducido lo meteré más adelante
+            //También de alguna forma cortar hasta qué valor tiene metido y así no meter nulos en la base de datos
+
+            const res = value1Insert + ';' + (value2Insert || '')
+
+            await intoChannelInsert.send(res);
+            interaction.reply('Dato insertado');
 
         } catch (error) {
             console.error('Error al insertar el contenido:', error);
-            interaction.reply('Hubo un error al intentar insertar los mensajes.');
+            interaction.reply('Hubo un error al intentar insertar los datos.');
         }
     }
 }

@@ -82,6 +82,30 @@ const commands = [
                 type: ApplicationCommandOptionType.String,
                 required: true,
             },
+            {
+                name: "value2",
+                description: "Primer parámetro de la consulta",
+                type: ApplicationCommandOptionType.String,
+                required: false,
+            },
+            {
+                name: "value3",
+                description: "Primer parámetro de la consulta",
+                type: ApplicationCommandOptionType.String,
+                required: false,
+            },
+            {
+                name: "value4",
+                description: "Primer parámetro de la consulta",
+                type: ApplicationCommandOptionType.String,
+                required: false,
+            },
+            {
+                name: "value5",
+                description: "Primer parámetro de la consulta",
+                type: ApplicationCommandOptionType.String,
+                required: false,
+            },
         ]
     },
     {
