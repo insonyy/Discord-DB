@@ -138,8 +138,32 @@ const commands = [
         options: [
             {
                 name: "from",
-                description: "Desde donde se quiere eliminar",
+                description: "Desde donde se quiere editar",
                 type: ApplicationCommandOptionType.Channel,
+                required: true,
+            },
+            {
+                name: "param1",
+                description: "Parámetro que se va a editar",
+                type: ApplicationCommandOptionType.String,
+                required: true,
+            },
+            {
+                name: "set1",
+                description: "Valor nuevo/editado",
+                type: ApplicationCommandOptionType.String,
+                required: true,
+            },
+            {
+                name: "where",
+                description: "Parámetro de referencia",
+                type: ApplicationCommandOptionType.String,
+                required: true,
+            },
+            {
+                name: "val1",
+                description: "Valor del parámetro de referencia",
+                type: ApplicationCommandOptionType.String,
                 required: true,
             },
 

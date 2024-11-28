@@ -197,6 +197,63 @@ async function del(interaction) {
 
 
 async function update(interaction){
+    const fromChannelUpdate = interaction.options.getChannel('from');
+    const param1Update = interaction.options.getString('param1');
+    const set1Update = interaction.options.getString('set1');
+    const whereUpdate = interaction.options.getString('where');
+    const val1Update = interaction.options.getString('val1');
+
+    if (!fromChannelUpdate.isTextBased()) {
+        return interaction.reply('Por favor, especifica un canal de texto válido.');
+    } else {
+        try{
+            let colms = [];
+            let values = [];
+            const colmString= fromChannelUpdate.topic;
+            const columns = colmString.split(';');
+
+
+            columns.forEach(column =>{
+                const match = column.match(/^([^()]+)\(([^)]+)\)$/);
+                if (match) {
+                    colms.push(match[1].trim());
+                    values.push(match[2].trim());
+                }
+            });
+
+            const whereIndex = colms.indexOf(whereUpdate);
+            const updateIndex = colms.indexOf(param1Update);
+
+            if (whereIndex === -1 || updateIndex === -1) {
+                return interaction.reply(
+                    `Las columnas especificadas no son válidas.`
+                );
+            }
+
+            const messages = await fromChannelUpdate.messages.fetch();
+
+            let updatedCount = 0;
+
+            for (const [_, msg] of messages) {
+                const msgParts = msg.content.split(';');
+                if (msgParts[whereIndex]?.trim() === val1Update) {
+                    msgParts[updateIndex] = set1Update;
+                    await msg.edit(msgParts.join(';'));
+                    updatedCount++;
+                }
+            }
+
+            if (updatedCount > 0) {
+                interaction.reply(`Se actualizaron ${updatedCount} registros en la columna '${param1Update}'.`);
+            } else {
+                interaction.reply('No se actualizó ningún valor.');
+            }
+
+        }catch (error){
+            console.error('Error al insertar el contenido:', error);
+            interaction.reply('Hubo un error al intentar insertar los datos.');
+        }
+    }
 
 }
 
