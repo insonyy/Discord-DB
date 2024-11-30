@@ -149,7 +149,6 @@ async function select(interaction) {
 async function del(interaction) {
     const fromChannelDelete = interaction.options.getChannel('from');
     const param1Delete = interaction.options.getString('param1');
-    //const param2Delete = interaction.options.getString('param2');
     const where = interaction.options.getString('where');
 
     if (!fromChannelDelete.isTextBased()) {
@@ -159,23 +158,6 @@ async function del(interaction) {
     try {
 
         const { colms, values } = getColumns(fromChannelDelete);
-
-
-        /**
-        let colms = [];
-        //let values = []
-        const colmString= fromChannelDelete.topic;
-        const columns = colmString.split(';');
-
-        columns.forEach(column =>{
-            const match = column.match(/^([^()]+)\(([^)]+)\)$/);
-            if (match) {
-                colms.push(match[1].trim());
-                //values.push(match[2].trim());
-            }
-        });
-
-        **/
 
         const whereIndex = colms.indexOf(where);
 
