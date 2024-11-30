@@ -133,6 +133,30 @@ const commands = [
         ]
     },
     {
+        name: "insert-mejor",
+        description: "Comando para insertar contenido en la base de datos.",
+        options: [
+            {
+                name: "into",
+                description: "Desde donde se quiere insertar",
+                type: ApplicationCommandOptionType.Channel,
+                required: true,
+            },
+            {
+                name: "cols",
+                description: "Columnas seleccionadas",
+                type: ApplicationCommandOptionType.String,
+                required: true,
+            },
+            {
+                name: "vals",
+                description: "Nuevos valores de las columnas seleccionadas",
+                type: ApplicationCommandOptionType.String,
+                required: true,
+            },
+        ]
+    },
+    {
         name: 'update',
         description: 'Comando para editar un dato',
         options: [
@@ -233,6 +257,66 @@ const commands = [
             },
         ]
     },
+
+    /**
+     * Ejemplo:
+     * Para añadir una nueva columna -> /alter-table add-col: apellido(varchar255)
+     * Para eliminar una columna -> /alter-table drop-col: nombre
+     * Para cambiarle el nombre a una columna -> /alter-table rename-col: id new-name: id_alumno
+     * Para cambiar el tipo a una columna -> /alter-table alter-type: nombre(varchar15) new-type: (varchar255)
+     * */
+
+    {
+        name: 'alter-table',
+        description: 'Comando para modificar una tabla existente en la base de datos',
+        options: [
+
+            {
+                name: "table_name",
+                description: "Nombre de la base de datos",
+                type: ApplicationCommandOptionType.Channel,
+                required: true,
+            },
+
+            {
+                name: "add-col",
+                description: "Agregar columnas",
+                type: ApplicationCommandOptionType.String,
+                required: false,
+            },
+            {
+                name: "drop-col",
+                description: "Eliminar columnas",
+                type: ApplicationCommandOptionType.String,
+                required: false,
+            },
+            {
+                name: "rename-col",
+                description: "Renombrar columna",
+                type: ApplicationCommandOptionType.String,
+                required: false,
+            },
+            {
+                name: "new-name",
+                description: "Nuevo nombre de la columna",
+                type: ApplicationCommandOptionType.String,
+                required: false,
+            },
+            {
+                name: "alter-type",
+                description: "Modificar el tipo de dato que acepta la columna",
+                type: ApplicationCommandOptionType.String,
+                required: false,
+            },
+            {
+                name: "new-type",
+                description: "Nuevo tipo de la columna",
+                type: ApplicationCommandOptionType.String,
+                required: false,
+            },
+        ]
+    },
+
     {
         name: 'use',
         description: 'Seleccionar base de datos a usar.',

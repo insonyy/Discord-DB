@@ -38,21 +38,35 @@ client.on('interactionCreate', async (interaction) => {
         case 'insert':
             insert(interaction)
             break;
+
+        case 'insert-mejor':
+            insertMejor(interaction)
+            break;
+
         case 'insert-prueba':
             insertPrueba(interaction)
             break;
+
         case 'update':
             update(interaction)
             break;
+
         case 'create-database':
             createDatabase(interaction)
             break;
+
         case 'drop-database':
             dropDatabase(interaction)
             break;
+
         case 'create-table':
             createTable(interaction)
             break;
+
+        case 'alter-table':
+            alterTable(interaction)
+            break;
+
         case 'use':
             use(interaction)
             break;
@@ -148,6 +162,10 @@ async function del(interaction) {
 
     try {
 
+        const { colms, values } = getColumns(fromChannelDelete);
+
+
+        /**
         let colms = [];
         //let values = []
         const colmString= fromChannelDelete.topic;
@@ -160,6 +178,8 @@ async function del(interaction) {
                 //values.push(match[2].trim());
             }
         });
+
+        **/
 
         const whereIndex = colms.indexOf(where);
 
@@ -207,6 +227,8 @@ async function update(interaction){
         return interaction.reply('Por favor, especifica un canal de texto válido.');
     } else {
         try{
+
+            /**
             let colms = [];
             let values = [];
             const colmString= fromChannelUpdate.topic;
@@ -220,15 +242,18 @@ async function update(interaction){
                     values.push(match[2].trim());
                 }
             });
+                **/
+
+            const { colms, values } = getColumns(fromChannelUpdate);
 
             const whereIndex = colms.indexOf(whereUpdate);
             const updateIndex = colms.indexOf(param1Update);
 
             if (whereIndex === -1 || updateIndex === -1) {
-                return interaction.reply(
-                    `Las columnas especificadas no son válidas.`
-                );
+                return interaction.reply('Las columnas especificadas no son válidas.');
             }
+
+            //Esto en un futuro me va a dar muchos problemas
 
             const messages = await fromChannelUpdate.messages.fetch();
 
@@ -257,7 +282,15 @@ async function update(interaction){
 
 }
 
+/**
+
 async function insert(interaction) {
+
+    //Se podría probar con un insert mucho más sencillo:
+    //que mida la longitud de los valores a introducir y los compare con los de la tabla
+    //Si hay alguno de más que lance un error
+    //Inspirarse en los insert de SQL
+
     const intoChannelInsert = interaction.options.getChannel('into');
     const value1Insert = interaction.options.getString('value1');
     const value2Insert = interaction.options.getString('value2');
@@ -299,6 +332,68 @@ async function insert(interaction) {
         } catch (error) {
             console.error('Error al insertar el contenido:', error);
             interaction.reply('Hubo un error al intentar insertar los datos.');
+        }
+    }
+}
+
+    **/
+
+async function insertMejor(interaction){
+
+    const intoChannelInsert = interaction.options.getChannel('into');
+    const colsInsert = interaction.options.getString('cols')
+    const valuesInsert = interaction.options.getString('vals');
+
+
+    if (!intoChannelInsert.isTextBased()) {
+        return interaction.reply('Por favor, especifica un canal de texto válido.');
+    } else {
+        try{
+
+            const { colms, values } = getColumns(fromChannelUpdate);
+
+            /**
+            let colms = [];
+            let values = []
+            const colmString= intoChannelInsert.topic;
+            const columns = colmString.split(';');
+
+            columns.forEach(column =>{
+                const match = column.match(/^([^()]+)\(([^)]+)\)$/);
+                if (match) {
+                    colms.push(match[1].trim());
+                    values.push(match[2].trim());
+                }
+            });
+                **/
+
+
+            const colmsArray = colsInsert.split(',').map(col => col.trim());
+            const valsArray = valuesInsert.split(',').map(val => val.trim());
+
+            if (colmsArray.length !== valsArray.length) {
+                return interaction.reply(
+                    `El número de columnas (${colmsArray.length}) no coincide con el número de valores (${valsArray.length}).`
+                );
+            } else {
+                for (const col of colmsArray) {
+                    if (!colms.includes(col)) {
+                        return interaction.reply(`La columna '${col}' no existe en la tabla.`);
+                    }
+                }
+
+                const row = colms.map(col => {
+                    const index = colmsArray.indexOf(col);
+                    return index !== -1 ? valsArray[index] : '';
+                }).join(';');
+
+                await intoChannelInsert.send(row);
+                interaction.reply('Datos insertados correctamente.');
+
+            }
+        }catch (error){
+            console.error('Error al insertar el contenido:', error);
+            interaction.reply('Hubo un error al intentar insertar los mensajes.');
         }
     }
 }
@@ -414,6 +509,38 @@ async function createTable(interaction){
     }
 }
 
+async function alterTable(interaction){
+    const tableNameAlterT = interaction.options.getChannel('table-name');
+    const addColAlterT = interaction.options.getString('add-col');
+    const dropColAlterT = interaction.options.getString('drop-col');
+    const renameColAlterT = interaction.options.getString('rename-col');
+    const alterColAlterT = interaction.options.getString('alter-col');
+
+    if (!tableNameAlterT){
+        return interaction.reply('La base de datos introducida no existe.');
+    } else {
+        try {
+
+            const colmString= tableNameAlterT.topic;
+
+            const { colms, values } = getColumns(tableNameAlterT);
+
+            if (addColAlterT){
+                colmString.join(";")
+            }else if (dropColAlterT){
+
+            }else if (renameColAlterT){
+
+            }else if (alterColAlterT){
+
+            }
+        }catch (error) {
+            console.error('Error al crear la tabla:', error);
+            interaction.reply('Hubo un error al intentar crear la tabla.');
+        }
+    }
+}
+
 async function use(interaction){
     const database = interaction.options.getString('database');
 
@@ -425,6 +552,25 @@ async function use(interaction){
         await interaction.reply('Se ha seleccionado la siguiente base de datos: ' + selectedDatabase)
     }
 }
+
+function getColumns(tableName){
+    let colms = [];
+    let values = [];
+    const colmString= tableName.topic;
+    const columns = colmString.split(';');
+
+
+    columns.forEach(column =>{
+        const match = column.match(/^([^()]+)\(([^)]+)\)$/);
+        if (match) {
+            colms.push(match[1].trim());
+            values.push(match[2].trim());
+        }
+    });
+
+    return { colms , values };
+}
+
 
 client.login(process.env.TOKEN);
 
