@@ -77,34 +77,16 @@ const commands = [
                 required: true,
             },
             {
-                name: "value1",
-                description: "Primer parámetro de la consulta",
+                name: "cols",
+                description: "Columnas seleccionadas",
                 type: ApplicationCommandOptionType.String,
                 required: true,
             },
             {
-                name: "value2",
-                description: "Primer parámetro de la consulta",
+                name: "vals",
+                description: "Nuevos valores de las columnas seleccionadas",
                 type: ApplicationCommandOptionType.String,
-                required: false,
-            },
-            {
-                name: "value3",
-                description: "Primer parámetro de la consulta",
-                type: ApplicationCommandOptionType.String,
-                required: false,
-            },
-            {
-                name: "value4",
-                description: "Primer parámetro de la consulta",
-                type: ApplicationCommandOptionType.String,
-                required: false,
-            },
-            {
-                name: "value5",
-                description: "Primer parámetro de la consulta",
-                type: ApplicationCommandOptionType.String,
-                required: false,
+                required: true,
             },
         ]
     },
@@ -128,30 +110,6 @@ const commands = [
                 name: "numrep",
                 description: "Primer parámetro de la consulta",
                 type: ApplicationCommandOptionType.Number,
-                required: true,
-            },
-        ]
-    },
-    {
-        name: "insert-mejor",
-        description: "Comando para insertar contenido en la base de datos.",
-        options: [
-            {
-                name: "into",
-                description: "Desde donde se quiere insertar",
-                type: ApplicationCommandOptionType.Channel,
-                required: true,
-            },
-            {
-                name: "cols",
-                description: "Columnas seleccionadas",
-                type: ApplicationCommandOptionType.String,
-                required: true,
-            },
-            {
-                name: "vals",
-                description: "Nuevos valores de las columnas seleccionadas",
-                type: ApplicationCommandOptionType.String,
                 required: true,
             },
         ]

@@ -39,10 +39,6 @@ client.on('interactionCreate', async (interaction) => {
             insert(interaction)
             break;
 
-        case 'insert-mejor':
-            insertMejor(interaction)
-            break;
-
         case 'insert-prueba':
             insertPrueba(interaction)
             break;
@@ -282,63 +278,7 @@ async function update(interaction){
 
 }
 
-/**
-
-async function insert(interaction) {
-
-    //Se podría probar con un insert mucho más sencillo:
-    //que mida la longitud de los valores a introducir y los compare con los de la tabla
-    //Si hay alguno de más que lance un error
-    //Inspirarse en los insert de SQL
-
-    const intoChannelInsert = interaction.options.getChannel('into');
-    const value1Insert = interaction.options.getString('value1');
-    const value2Insert = interaction.options.getString('value2');
-    const value3Insert = interaction.options.getString('value3');
-    const value4Insert = interaction.options.getString('value4');
-    const value5Insert = interaction.options.getString('value5');
-
-    if (!intoChannelInsert.isTextBased()) {
-        return interaction.reply('Por favor, especifica un canal de texto válido.');
-    } else {
-        try {
-
-            let colms = [];
-            let values = []
-            const colmString= intoChannelInsert.topic;
-            const columns = colmString.split(';');
-
-            columns.forEach(column =>{
-                    const match = column.match(/^([^()]+)\(([^)]+)\)$/);
-                if (match) {
-                    colms.push(match[1].trim());
-                    values.push(match[2].trim());
-                }
-            });
-
-            console.log(intoChannelInsert.topic)
-            console.log(`Número de columnas: ${colms.length}`);
-            console.log(`Columnas: ${colms}`);
-            console.log(`Valores: ${values}`);
-
-            //Comprobar el tipo de dato introducido lo meteré más adelante
-            //También de alguna forma cortar hasta qué valor tiene metido y así no meter nulos en la base de datos
-
-            const res = value1Insert + ';' + (value2Insert || '')
-
-            await intoChannelInsert.send(res);
-            interaction.reply('Dato insertado');
-
-        } catch (error) {
-            console.error('Error al insertar el contenido:', error);
-            interaction.reply('Hubo un error al intentar insertar los datos.');
-        }
-    }
-}
-
-    **/
-
-async function insertMejor(interaction){
+async function insert(interaction){
 
     const intoChannelInsert = interaction.options.getChannel('into');
     const colsInsert = interaction.options.getString('cols')
@@ -350,22 +290,7 @@ async function insertMejor(interaction){
     } else {
         try{
 
-            const { colms, values } = getColumns(fromChannelUpdate);
-
-            /**
-            let colms = [];
-            let values = []
-            const colmString= intoChannelInsert.topic;
-            const columns = colmString.split(';');
-
-            columns.forEach(column =>{
-                const match = column.match(/^([^()]+)\(([^)]+)\)$/);
-                if (match) {
-                    colms.push(match[1].trim());
-                    values.push(match[2].trim());
-                }
-            });
-                **/
+            const { colms, values } = getColumns(intoChannelInsert);
 
 
             const colmsArray = colsInsert.split(',').map(col => col.trim());
