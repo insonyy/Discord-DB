@@ -1,4 +1,4 @@
-const { Client, IntentsBitField, Collection, ChannelType } = require('discord.js');
+const {Client, IntentsBitField, Collection, ChannelType} = require('discord.js');
 require('dotenv').config();
 
 let selectedDatabase
@@ -58,6 +58,9 @@ client.on('interactionCreate', async (interaction) => {
         case 'create-table':
             createTable(interaction)
             break;
+        case 'mejor-create-table':
+            mejorCreateTable(interaction)
+            break;
 
         case 'alter-table':
             alterTable(interaction)
@@ -71,7 +74,7 @@ client.on('interactionCreate', async (interaction) => {
     }
 });
 
-function version(interaction){
+function version(interaction) {
     interaction.reply('Versión del bot: ' + require('../package.json').version);
 }
 
@@ -157,7 +160,7 @@ async function del(interaction) {
 
     try {
 
-        const { colms, values } = getColumns(fromChannelDelete);
+        const {colms, values} = getColumns(fromChannelDelete);
 
         const whereIndex = colms.indexOf(where);
 
@@ -193,8 +196,7 @@ async function del(interaction) {
 }
 
 
-
-async function update(interaction){
+async function update(interaction) {
     const fromChannelUpdate = interaction.options.getChannel('from');
     const param1Update = interaction.options.getString('param1');
     const set1Update = interaction.options.getString('set1');
@@ -204,25 +206,9 @@ async function update(interaction){
     if (!fromChannelUpdate.isTextBased()) {
         return interaction.reply('Por favor, especifica un canal de texto válido.');
     } else {
-        try{
+        try {
 
-            /**
-            let colms = [];
-            let values = [];
-            const colmString= fromChannelUpdate.topic;
-            const columns = colmString.split(';');
-
-
-            columns.forEach(column =>{
-                const match = column.match(/^([^()]+)\(([^)]+)\)$/);
-                if (match) {
-                    colms.push(match[1].trim());
-                    values.push(match[2].trim());
-                }
-            });
-                **/
-
-            const { colms, values } = getColumns(fromChannelUpdate);
+            const {colms, values} = getColumns(fromChannelUpdate);
 
             const whereIndex = colms.indexOf(whereUpdate);
             const updateIndex = colms.indexOf(param1Update);
@@ -252,7 +238,7 @@ async function update(interaction){
                 interaction.reply('No se actualizó ningún valor.');
             }
 
-        }catch (error){
+        } catch (error) {
             console.error('Error al insertar el contenido:', error);
             interaction.reply('Hubo un error al intentar insertar los datos.');
         }
@@ -260,7 +246,7 @@ async function update(interaction){
 
 }
 
-async function insert(interaction){
+async function insert(interaction) {
 
     const intoChannelInsert = interaction.options.getChannel('into');
     const colsInsert = interaction.options.getString('cols')
@@ -270,9 +256,9 @@ async function insert(interaction){
     if (!intoChannelInsert.isTextBased()) {
         return interaction.reply('Por favor, especifica un canal de texto válido.');
     } else {
-        try{
+        try {
 
-            const { colms, values } = getColumns(intoChannelInsert);
+            const {colms, values} = getColumns(intoChannelInsert);
 
 
             const colmsArray = colsInsert.split(',').map(col => col.trim());
@@ -298,14 +284,14 @@ async function insert(interaction){
                 interaction.reply('Datos insertados correctamente.');
 
             }
-        }catch (error){
+        } catch (error) {
             console.error('Error al insertar el contenido:', error);
             interaction.reply('Hubo un error al intentar insertar los mensajes.');
         }
     }
 }
 
-async function insertPrueba(interaction){
+async function insertPrueba(interaction) {
     const intoChannelInsertP = interaction.options.getChannel('into');
     const value1InsertP = interaction.options.getString('value1');
     const numrepInsertP = interaction.options.getNumber('numrep');
@@ -388,7 +374,7 @@ async function dropDatabase(interaction) {
 
 }
 
-async function createTable(interaction){
+async function createTable(interaction) {
 
     const nameTable = interaction.options.getString('table_name');
     const column1 = interaction.options.getString('column1');
@@ -396,78 +382,157 @@ async function createTable(interaction){
     const column2 = interaction.options.getString('column2');
     const datatype2 = interaction.options.getString('datatype2');
 
-    if (!selectedDatabase){
+    if (!selectedDatabase) {
         return interaction.reply('Por favor introduzca una base de datos válida.');
-    } else{
-        try{
+    } else {
+        try {
             await interaction.guild.channels.create({
                 name: nameTable,
                 type: ChannelType.Channel,
                 parent: selectedDatabase.id,
-                topic: column1 + '(' + datatype1 + ')' + ';' + column2 + '(' + datatype2 +')'
+                topic: column1 + '(' + datatype1 + ')' + ';' + column2 + '(' + datatype2 + ')'
             });
 
             await interaction.reply(`La tabla '${nameTable}' ha sido creada con éxito.`);
 
-        }catch (error){
+        } catch (error) {
             console.error('Error al crear la tabla:', error);
             interaction.reply('Hubo un error al intentar crear la tabla.');
         }
     }
 }
 
-async function alterTable(interaction){
+async function mejorCreateTable(interaction){
+    const nameTable = interaction.options.getString('table_name');
+    const colmsCreateTable = interaction.options.getString('colms_def');
+
+    if (!selectedDatabase) {
+        return interaction.reply('Por favor introduzca una base de datos válida.');
+    } else {
+
+        await interaction.deferReply();
+
+        const columns = colmsCreateTable.split(',');
+
+        let topic = '';
+
+        for (let col of columns) {
+            const [columnName, dataType] = col.trim().split(' ');
+            if (!columnName || !dataType) {
+                return interaction.editReply('Definición de columnas inválida. Asegúrate de usar "nombre tipo".');
+            }
+            topic += `${columnName}(${dataType});`;
+        }
+
+        topic = topic.slice(0, -2);
+
+        try{
+            await interaction.guild.channels.create({
+                name: nameTable,
+                type: ChannelType.Channel,
+                parent: selectedDatabase.id,
+                topic: topic
+            });
+
+            await interaction.editReply(`La tabla '${nameTable}' ha sido creada con éxito.`);
+        }catch (error){
+            console.error('Error al crear la tabla:', error);
+            interaction.reply('Hubo un error al intentar crear la tabla.');
+        }
+    }
+
+}
+
+async function alterTable(interaction) {
     const tableNameAlterT = interaction.options.getChannel('table-name');
     const addColAlterT = interaction.options.getString('add-col');
     const dropColAlterT = interaction.options.getString('drop-col');
     const renameColAlterT = interaction.options.getString('rename-col');
     const alterColAlterT = interaction.options.getString('alter-col');
 
-    if (!tableNameAlterT){
+    if (!tableNameAlterT) {
         return interaction.reply('La base de datos introducida no existe.');
     } else {
+
+        await interaction.deferReply();
+
         try {
 
-            const colmString= tableNameAlterT.topic;
+            const {colms, values} = getColumns(tableNameAlterT);
 
-            const { colms, values } = getColumns(tableNameAlterT);
+            const messages = await tableNameAlterT.messages.fetch();
 
-            if (addColAlterT){
-                colmString.join(";")
-            }else if (dropColAlterT){
+            if (addColAlterT) {
+                const [colName, colType] = addColAlterT.split('(');
+                if (!colType.endsWith(')') || !colType) {
+                    return interaction.editReply('El formato de la nueva columna debe ser "nombre(tipo)".');
+                }
+                if (colms.includes(colName.trim())) {
+                    return interaction.editReply('La columna ya existe.');
+                }
 
-            }else if (renameColAlterT){
+                colms.push(colName.trim());
+                values.push(colType.slice(0, -1).trim());
 
-            }else if (alterColAlterT){
+                let updatedCount = 0;
 
+                for (const [_, msg] of messages) {
+                    const msgParts = msg.content.split(';');
+                    msgParts.push('null');
+                    await msg.edit(msgParts.join(';'));
+                    updatedCount++;
+                }
+                interaction.editReply(`Columna '${colName.trim()}' añadida con éxito.`);
             }
-        }catch (error) {
-            console.error('Error al crear la tabla:', error);
-            interaction.reply('Hubo un error al intentar crear la tabla.');
+
+            if (dropColAlterT) {
+                const colIndex = colms.indexOf(dropColAlterT);
+                if (colIndex === -1) {
+                    return interaction.editReply('La columna especificada no existe.');
+                }
+
+                colms.splice(colIndex, 1);
+                values.splice(colIndex, 1);
+                interaction.editReply(`Columna '${dropColAlterT}' eliminada con éxito.`);
+            }
+
+            const newTopic = colms
+                .map((col, idx) => `${col}(${values[idx]})`)
+                .join(';');
+
+
+            if (newTopic) {
+                await tableNameAlterT.setTopic(newTopic);
+            }
+
+        } catch (error) {
+            console.error('Error al intentar alterar la tabla:', error);
+            interaction.editReply('Hubo un error al intentar alterar la tabla.');
         }
     }
 }
 
-async function use(interaction){
+
+async function use(interaction) {
     const database = interaction.options.getString('database');
 
-    selectedDatabase  = interaction.guild.channels.cache.find(c => c.name === database && c.type === ChannelType.GuildCategory);
+    selectedDatabase = interaction.guild.channels.cache.find(c => c.name === database && c.type === ChannelType.GuildCategory);
 
-    if (!selectedDatabase){
+    if (!selectedDatabase) {
         return interaction.reply('La base de datos introducida no existe.');
     } else {
         await interaction.reply('Se ha seleccionado la siguiente base de datos: ' + selectedDatabase)
     }
 }
 
-function getColumns(tableName){
+function getColumns(tableName) {
     let colms = [];
     let values = [];
-    const colmString= tableName.topic;
+    const colmString = tableName.topic;
     const columns = colmString.split(';');
 
 
-    columns.forEach(column =>{
+    columns.forEach(column => {
         const match = column.match(/^([^()]+)\(([^)]+)\)$/);
         if (match) {
             colms.push(match[1].trim());
@@ -475,7 +540,7 @@ function getColumns(tableName){
         }
     });
 
-    return { colms , values };
+    return {colms, values};
 }
 
 

@@ -177,6 +177,12 @@ const commands = [
             },
         ]
     },
+
+    /**
+     * Ejemplo:
+     * Para crear una tabla: /create-table
+     * */
+
     {
         name: 'create-table',
         description: 'Comando para crear una tabla en la base de datos',
@@ -216,6 +222,27 @@ const commands = [
         ]
     },
 
+    {
+        name: 'mejor-create-table',
+        description: 'Comando para crear una tabla en la base de datos',
+        options: [
+
+            {
+                name: "table_name",
+                description: "Nombre de la base de datos",
+                type: ApplicationCommandOptionType.String,
+                required: true,
+            },
+
+            {
+                name: "colms_def",
+                description: "Columnas que se definen para la tabla",
+                type: ApplicationCommandOptionType.String,
+                required: false,
+            },
+        ]
+    },
+
     /**
      * Ejemplo:
      * Para añadir una nueva columna -> /alter-table add-col: apellido(varchar255)
@@ -230,7 +257,7 @@ const commands = [
         options: [
 
             {
-                name: "table_name",
+                name: "table-name",
                 description: "Nombre de la base de datos",
                 type: ApplicationCommandOptionType.Channel,
                 required: true,
